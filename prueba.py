@@ -1,4 +1,7 @@
-# EJERCICIO GESTIÓN DE BIBLIOTECA
+# =============================
+# SISTEMA DE GESTIÓN DE BIBLIOTECA
+# Programación Orientada a Objetos
+# =============================
 
 class Libro:
     def __init__(self, titulo, autor, isbn):
@@ -131,7 +134,10 @@ class Biblioteca:
 
         print("Libro no encontrado o ya disponible")
 
+
+# =============================
 # MENÚ PRINCIPAL
+# =============================
 
 biblioteca = Biblioteca()
 

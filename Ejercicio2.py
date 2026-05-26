@@ -1,9 +1,11 @@
-# Sistema de Gestión de Facultad
+# EJERCICIO DE GESTIÓN DE FACULTAD
 
 class Estudiante:
+
     contador_id = 1
 
     def __init__(self, nombre, apellido, matricula, carrera):
+
         self.id = Estudiante.contador_id
         Estudiante.contador_id += 1
 
@@ -11,132 +13,198 @@ class Estudiante:
         self.apellido = apellido
         self.matricula = matricula
         self.carrera = carrera
-        self.cursos_inscriptos = []
-
-    def inscribirse_curso(self, curso):
-        if curso.inscribir_estudiante(self):
-            self.cursos_inscriptos.append(curso)
-
-    def darse_baja_curso(self, curso):
-        if curso in self.cursos_inscriptos:
-            curso.dar_baja_estudiante(self)
-            self.cursos_inscriptos.remove(curso)
-        else:
-            print(f"{self.nombre} no está inscripto en este curso")
-
-    def mostrar_cursos(self):
-        print(f"\nCursos de {self.nombre} {self.apellido}:")
-
-        if len(self.cursos_inscriptos) == 0:
-            print("No está inscripto en cursos")
-        else:
-            for curso in self.cursos_inscriptos:
-                print(f"- {curso.nombre}")
+        self.cursos = []
 
 
 class Curso:
-    def __init__(self, nombre, codigo, profesor, capacidad_maxima):
+
+    def __init__(self, nombre, codigo, profesor, capacidad):
+
         self.nombre = nombre
         self.codigo = codigo
         self.profesor = profesor
-        self.capacidad_maxima = capacidad_maxima
+        self.capacidad = capacidad
         self.estudiantes = []
 
-    def inscribir_estudiante(self, estudiante):
-        if len(self.estudiantes) < self.capacidad_maxima:
-            self.estudiantes.append(estudiante)
-            print(f"{estudiante.nombre} se inscribió en {self.nombre}")
-            return True
-        else:
-            print(f"No hay cupos disponibles en {self.nombre}")
-            return False
-
-    def dar_baja_estudiante(self, estudiante):
-        if estudiante in self.estudiantes:
-            self.estudiantes.remove(estudiante)
-            print(f"{estudiante.nombre} se dio de baja de {self.nombre}")
-
-    def mostrar_estado(self):
-        cupos_disponibles = self.capacidad_maxima - len(self.estudiantes)
-
-        print(f"\nCurso: {self.nombre}")
-        print(f"Código: {self.codigo}")
-        print(f"Profesor: {self.profesor}")
-        print(f"Inscriptos: {len(self.estudiantes)}")
-        print(f"Cupos disponibles: {cupos_disponibles}")
-
-        if len(self.estudiantes) > 0:
-            print("Estudiantes inscriptos:")
-
-            for estudiante in self.estudiantes:
-                print(f"- {estudiante.nombre} {estudiante.apellido}")
-
-
 class Facultad:
+
     def __init__(self):
+
         self.estudiantes = []
         self.cursos = []
 
-    def agregar_estudiante(self, estudiante):
-        self.estudiantes.append(estudiante)
-        print(f"Estudiante {estudiante.nombre} agregado correctamente")
+    def agregar_estudiante(self):
 
-    def agregar_curso(self, curso):
+        nombre = input("Nombre: ")
+        apellido = input("Apellido: ")
+        matricula = input("Matrícula: ")
+        carrera = input("Carrera: ")
+
+        estudiante = Estudiante(nombre, apellido, matricula, carrera)
+
+        self.estudiantes.append(estudiante)
+
+        print("Estudiante agregado correctamente")
+
+    def agregar_curso(self):
+
+        nombre = input("Nombre del curso: ")
+        codigo = input("Código: ")
+        profesor = input("Profesor: ")
+        capacidad = int(input("Capacidad máxima: "))
+
+        curso = Curso(nombre, codigo, profesor, capacidad)
+
         self.cursos.append(curso)
-        print(f"Curso {curso.nombre} agregado correctamente")
+
+        print("Curso agregado correctamente")
 
     def mostrar_cursos(self):
-        print("\n----- CURSOS -----")
+
+        if len(self.cursos) == 0:
+            print("No hay cursos registrados")
+            return
+
+        print("\n--- CURSOS ---")
 
         for curso in self.cursos:
-            curso.mostrar_estado()
+
+            cupos = curso.capacidad - len(curso.estudiantes)
+
+            print(f"Curso: {curso.nombre}")
+            print(f"Código: {curso.codigo}")
+            print(f"Profesor: {curso.profesor}")
+            print(f"Inscriptos: {len(curso.estudiantes)}")
+            print(f"Cupos disponibles: {cupos}")
+
+            if len(curso.estudiantes) > 0:
+                print("Estudiantes:")
+
+                for estudiante in curso.estudiantes:
+                    print(f"- {estudiante.nombre} {estudiante.apellido}")
+
+            print("-------------------")
 
     def mostrar_estudiantes(self):
-        print("\n----- ESTUDIANTES -----")
+
+        if len(self.estudiantes) == 0:
+            print("No hay estudiantes registrados")
+            return
+
+        print("\n--- ESTUDIANTES ---")
 
         for estudiante in self.estudiantes:
-            print(f"\nID: {estudiante.id}")
+
+            print(f"ID: {estudiante.id}")
             print(f"Nombre: {estudiante.nombre} {estudiante.apellido}")
             print(f"Matrícula: {estudiante.matricula}")
             print(f"Carrera: {estudiante.carrera}")
 
-            if len(estudiante.cursos_inscriptos) == 0:
+            if len(estudiante.cursos) == 0:
                 print("No está inscripto en cursos")
+
             else:
                 print("Cursos inscriptos:")
 
-                for curso in estudiante.cursos_inscriptos:
+                for curso in estudiante.cursos:
                     print(f"- {curso.nombre}")
 
+            print("-------------------")
+
+    def inscribir_estudiante(self):
+
+        matricula = input("Ingrese matrícula del estudiante: ")
+        codigo = input("Ingrese código del curso: ")
+
+        estudiante_encontrado = None
+        curso_encontrado = None
+
+        for estudiante in self.estudiantes:
+            if estudiante.matricula == matricula:
+                estudiante_encontrado = estudiante
+
+        for curso in self.cursos:
+            if curso.codigo == codigo:
+                curso_encontrado = curso
+
+        if estudiante_encontrado is None:
+            print("Estudiante no encontrado")
+            return
+
+        if curso_encontrado is None:
+            print("Curso no encontrado")
+            return
+
+        if len(curso_encontrado.estudiantes) < curso_encontrado.capacidad:
+
+            curso_encontrado.estudiantes.append(estudiante_encontrado)
+            estudiante_encontrado.cursos.append(curso_encontrado)
+
+            print("Inscripción realizada correctamente")
+
+        else:
+            print("No hay cupos disponibles")
+
+    def dar_baja(self):
+
+        matricula = input("Ingrese matrícula del estudiante: ")
+        codigo = input("Ingrese código del curso: ")
+
+        for estudiante in self.estudiantes:
+
+            if estudiante.matricula == matricula:
+
+                for curso in estudiante.cursos:
+
+                    if curso.codigo == codigo:
+
+                        estudiante.cursos.remove(curso)
+                        curso.estudiantes.remove(estudiante)
+
+                        print("Baja realizada correctamente")
+                        return
+
+        print("No se encontró la inscripción")
+
+
+# MENÚ PRINCIPAL
 
 facultad = Facultad()
 
-est1 = Estudiante("Juan", "Perez", "2023001", "Ingeniería")
-est2 = Estudiante("Maria", "Gomez", "2023002", "Medicina")
-est3 = Estudiante("Lucas", "Fernandez", "2023003", "Derecho")
+while True:
 
-facultad.agregar_estudiante(est1)
-facultad.agregar_estudiante(est2)
-facultad.agregar_estudiante(est3)
+    print("\n====== FACULTAD ======")
+    print("1 - Agregar estudiante")
+    print("2 - Agregar curso")
+    print("3 - Inscribir estudiante")
+    print("4 - Dar baja de curso")
+    print("5 - Mostrar cursos")
+    print("6 - Mostrar estudiantes")
+    print("7 - Salir")
 
-curso1 = Curso("Programación", "PRG101", "Carlos Lopez", 2)
-curso2 = Curso("Matemática", "MAT201", "Ana Torres", 3)
+    opcion = input("Seleccione una opción: ")
 
-facultad.agregar_curso(curso1)
-facultad.agregar_curso(curso2)
+    if opcion == "1":
+        facultad.agregar_estudiante()
 
-est1.inscribirse_curso(curso1)
-est2.inscribirse_curso(curso1)
-est3.inscribirse_curso(curso1)
+    elif opcion == "2":
+        facultad.agregar_curso()
 
-est1.inscribirse_curso(curso2)
-est3.inscribirse_curso(curso2)
+    elif opcion == "3":
+        facultad.inscribir_estudiante()
 
-facultad.mostrar_cursos()
-facultad.mostrar_estudiantes()
+    elif opcion == "4":
+        facultad.dar_baja()
 
-est1.darse_baja_curso(curso1)
-print("\n----- ESTADO ACTUALIZADO -----")
+    elif opcion == "5":
+        facultad.mostrar_cursos()
 
-facultad.mostrar_cursos()
-facultad.mostrar_estudiantes()
+    elif opcion == "6":
+        facultad.mostrar_estudiantes()
+
+    elif opcion == "7":
+        print("Saliendo del sistema...")
+        break
+
+    else:
+        print("Opción inválida")
